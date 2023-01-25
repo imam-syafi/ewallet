@@ -27,7 +27,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/registration")
-    public ResponseEntity<ApiBody<Void>> registration(@Valid @RequestBody RegistrationDto payload) {
+    public ResponseEntity<ApiBody<Void>> registration( @RequestBody RegistrationDto payload) {
         userService.register(payload.username(), payload.password());
 
         return new ResponseEntity<>(ApiBody.ok(), HttpStatus.OK);

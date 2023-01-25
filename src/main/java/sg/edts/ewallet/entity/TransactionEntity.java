@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import sg.edts.ewallet.dto.request.SendBalanceDto;
+import sg.edts.ewallet.dto.response.BalanceSentDto;
 
 @Entity
 @Table(name = "transactions")
@@ -75,5 +77,13 @@ public class TransactionEntity {
 
     public TransactionStatus getStatus() {
         return status;
+    }
+
+    public BalanceSentDto toBalanceSentDto() {
+        return new BalanceSentDto(id, originUsername, destinationUsername, amount, status);
+    }
+
+    public static TransactionEntity from(SendBalanceDto dto, TransactionType type, TransactionStatus status) {
+        return new TransactionEntity(dto.username(), dto.destinationUsername(), dto.amount(), type, status);
     }
 }

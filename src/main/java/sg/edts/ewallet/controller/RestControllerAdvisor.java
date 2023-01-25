@@ -12,7 +12,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import sg.edts.ewallet.dto.response.ApiBody;
 import sg.edts.ewallet.exception.KtpTakenException;
+import sg.edts.ewallet.exception.LimitExceededException;
+import sg.edts.ewallet.exception.MinAmountException;
+import sg.edts.ewallet.exception.NotEnoughBalanceException;
 import sg.edts.ewallet.exception.PasswordInvalidException;
+import sg.edts.ewallet.exception.UserBannedException;
 import sg.edts.ewallet.exception.UserNotFoundException;
 import sg.edts.ewallet.exception.UsernameTakenException;
 
@@ -41,6 +45,17 @@ public class RestControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PasswordInvalidException.class)
     public ResponseEntity<ApiBody<Void>> handlePasswordIncorrectException(PasswordInvalidException ex, WebRequest request) {
+        var body = ApiBody.error(ex.getLocalizedMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            LimitExceededException.class,
+            MinAmountException.class,
+            NotEnoughBalanceException.class,
+            UserBannedException.class,
+    })
+    public ResponseEntity<ApiBody<Void>> handleCustomException(RuntimeException ex) {
         var body = ApiBody.error(ex.getLocalizedMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
