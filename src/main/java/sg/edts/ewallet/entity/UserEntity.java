@@ -1,11 +1,16 @@
 package sg.edts.ewallet.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -34,6 +39,9 @@ public class UserEntity {
     private Boolean isDeleted;
 
     private String ktp;
+
+//    @OneToMany(mappedBy = "user")
+//    private List<TransactionEntity> transactions;
 
     public UserEntity() {
     }

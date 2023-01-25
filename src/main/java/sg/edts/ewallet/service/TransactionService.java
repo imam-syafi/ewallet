@@ -1,5 +1,6 @@
 package sg.edts.ewallet.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.edts.ewallet.common.Constant;
@@ -8,7 +9,6 @@ import sg.edts.ewallet.dto.request.TopUpDto;
 import sg.edts.ewallet.dto.response.BalanceSentDto;
 import sg.edts.ewallet.entity.TransactionEntity;
 import sg.edts.ewallet.entity.TransactionStatus;
-import sg.edts.ewallet.entity.TransactionType;
 import sg.edts.ewallet.entity.UserEntity;
 import sg.edts.ewallet.exception.BalanceExceededException;
 import sg.edts.ewallet.exception.LimitExceededException;
@@ -27,6 +27,7 @@ import static sg.edts.ewallet.common.Constant.MAX_TRANSACTION_UNVERIFIED_KTP;
 import static sg.edts.ewallet.common.Constant.MAX_TRANSACTION_VERIFIED_KTP;
 
 @Service
+//@Transactional
 public class TransactionService {
 
     @Autowired
@@ -73,11 +74,43 @@ public class TransactionService {
         sender.setBalance(sender.getBalance() - payload.amount());
         receiver.setBalance(receiver.getBalance() + payload.amount());
 
-        userRepository.saveAll(List.of(sender, receiver));
+        System.out.println(sender.getBalance());
+        System.out.println(receiver.getBalance());
 
-        return transactionRepository
-                .save(TransactionEntity.from(payload, TransactionType.DEBIT, TransactionStatus.SETTLED))
-                .toBalanceSentDto();
+//        userRepository.saveAll(List.of(sender, receiver));
+
+        TransactionEntity sent = new TransactionEntity(
+                payload.username(),
+                -payload.amount(),
+                TransactionStatus.SETTLED
+        );
+        sent.setUser(sender);
+
+        TransactionEntity received = new TransactionEntity(
+                payload.destinationUsername(),
+                payload.amount(),
+                TransactionStatus.SETTLED
+        );
+        received.setUser(receiver);
+
+        transactionRepository.saveAll(List.of(sent, received));
+
+        System.out.println(sent.getUser().getBalance());
+        System.out.println(received.getUser().getBalance());
+
+        return new BalanceSentDto(
+                sent.getId(),
+                payload.username(),
+                payload.destinationUsername(),
+                payload.amount(),
+                TransactionStatus.SETTLED
+        );
+
+//        return transactionRepository
+//                .save(new TransactionEntity(payload.username(), payload.amount(), TransactionStatus.SETTLED, sender))
+//                .toBalanceSentDto(payload.destinationUsername());
+//                .save(TransactionEntity.from(payload, TransactionType.DEBIT, TransactionStatus.SETTLED))
+//                .toBalanceSentDto();
     }
 
     public void topup(TopUpDto payload) {
