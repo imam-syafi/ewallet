@@ -1,16 +1,12 @@
 package sg.edts.ewallet.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import java.util.List;
+import sg.edts.ewallet.common.Constant;
 
 @Entity
 @Table(name = "users")
@@ -27,21 +23,12 @@ public class UserEntity {
     private String password;
 
     @Column(nullable = false)
-    private Long balance;
+    private Double balance;
 
     @Column(nullable = false)
     private Integer failedRetryCount;
 
-    @Column(nullable = false)
-    private Boolean isBanned;
-
-    @Column(nullable = false)
-    private Boolean isDeleted;
-
     private String ktp;
-
-//    @OneToMany(mappedBy = "user")
-//    private List<TransactionEntity> transactions;
 
     public UserEntity() {
     }
@@ -49,10 +36,8 @@ public class UserEntity {
     public UserEntity(String username, String password) {
         this.username = username;
         this.password = password;
-        this.balance = 0L;
+        this.balance = 0.0;
         this.failedRetryCount = 0;
-        this.isBanned = false;
-        this.isDeleted = false;
     }
 
     public Long getId() {
@@ -71,36 +56,12 @@ public class UserEntity {
         this.password = password;
     }
 
-    public Long getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(Long balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
-    }
-
-    public Integer getFailedRetryCount() {
-        return failedRetryCount;
-    }
-
-    public void setFailedRetryCount(Integer failedRetryCount) {
-        this.failedRetryCount = failedRetryCount;
-    }
-
-    public Boolean getBanned() {
-        return isBanned;
-    }
-
-    public void setBanned(Boolean banned) {
-        isBanned = banned;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 
     public String getKtp() {
@@ -109,5 +70,17 @@ public class UserEntity {
 
     public void setKtp(String ktp) {
         this.ktp = ktp;
+    }
+
+    public boolean isBanned() {
+        return failedRetryCount >= Constant.MAX_RETRY;
+    }
+
+    public void incrementFailedRetryCount() {
+        failedRetryCount++;
+    }
+
+    public void resetFailedRetryCount() {
+        failedRetryCount = 0;
     }
 }

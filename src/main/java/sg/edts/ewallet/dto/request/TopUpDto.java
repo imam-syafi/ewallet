@@ -22,6 +22,6 @@ public record TopUpDto(
 
         @NotNull(message = "amount must not be null")
         @Min(value = 1, message = "amount must not be negative")
-        Long amount
+        Double amount
 ) {
 }

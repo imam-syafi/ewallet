@@ -39,6 +39,16 @@ public class UserService {
         userRepository.save(entity);
     }
 
+    public void unban(String username) {
+        UserEntity entity = userRepository
+                .findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+
+        entity.resetFailedRetryCount();
+
+        userRepository.save(entity);
+    }
+
     public void addKtp(String username, String ktp) {
         UserEntity entity = userRepository
                 .findByUsername(username)

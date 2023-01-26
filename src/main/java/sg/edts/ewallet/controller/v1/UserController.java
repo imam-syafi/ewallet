@@ -27,7 +27,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/registration")
-    public ResponseEntity<ApiBody<Void>> registration( @RequestBody RegistrationDto payload) {
+    public ResponseEntity<ApiBody<Void>> registration(@RequestBody RegistrationDto payload) {
         userService.register(payload.username(), payload.password());
 
         return new ResponseEntity<>(ApiBody.ok(), HttpStatus.OK);
@@ -54,6 +54,13 @@ public class UserController {
         var body = ApiBody.ok(data);
 
         return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+
+    @PutMapping("/{username}/unban")
+    public ResponseEntity<ApiBody<Void>> unban(@PathVariable("username") String username) {
+        userService.unban(username);
+
+        return new ResponseEntity<>(ApiBody.ok(), HttpStatus.OK);
     }
 
     @PutMapping("/{username}/addktp")

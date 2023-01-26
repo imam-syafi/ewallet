@@ -1,12 +1,12 @@
 package sg.edts.ewallet.dto.response;
 
-import sg.edts.ewallet.entity.TransactionStatus;
+import sg.edts.ewallet.entity.TransactionEntity.Status;
 
 public record BalanceSentDto(
         Long trxId,
         String originUsername,
         String destinationUsername,
-        Long amount,
-        TransactionStatus status
+        Double amount,
+        Status status
 ) {
 }

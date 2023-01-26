@@ -10,5 +10,7 @@ public class Constant {
 
     public static final Long MAX_TOP_UP = 10_000_000L;
 
+    public static final Integer MAX_RETRY = 3;
+
     public static final Float TAX = 0.125F;
 }

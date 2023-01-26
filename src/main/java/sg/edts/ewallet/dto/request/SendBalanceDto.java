@@ -25,6 +25,6 @@ public record SendBalanceDto(
         String destinationUsername,
 
         @NotNull(message = "amount must not be null")
-        Long amount
+        Double amount
 ) {
 }

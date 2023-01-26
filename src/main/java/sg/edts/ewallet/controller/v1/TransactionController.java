@@ -31,7 +31,7 @@ public class TransactionController {
 
     @PostMapping("/topup")
     public ResponseEntity<ApiBody<Void>> topup(@Valid @RequestBody TopUpDto payload) {
-        transactionService.topup(payload);
+        transactionService.topUp(payload);
 
         return new ResponseEntity<>(ApiBody.ok(), HttpStatus.OK);
     }
