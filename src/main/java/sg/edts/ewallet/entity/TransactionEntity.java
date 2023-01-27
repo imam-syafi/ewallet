@@ -1,5 +1,6 @@
 package sg.edts.ewallet.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "transactions")
@@ -23,30 +28,22 @@ public class TransactionEntity {
 //    @Column(nullable = false)
 //    private String destinationUsername;
 
-//    @Column(nullable = false)
-//    private String username;
-
     @Column(nullable = false)
     private Double amount;
 
     @Column(nullable = false)
     private Type type;
 
-//    @Column(nullable = false)
-//    @Temporal(TemporalType.DATE)
-//    private Date date;
-//
-//    @Column(nullable = false)
-//    @Temporal(TemporalType.TIME)
-//    private Date time;
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDate date;
+
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalTime time;
 
     @Column(nullable = false)
     private Status status;
-
-//    @JsonIgnore
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private UserEntity user;
 
     @Column(nullable = false)
     private Double balanceBefore;
@@ -54,6 +51,7 @@ public class TransactionEntity {
     @Column(nullable = false)
     private Double balanceAfter;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "affected_user_id")
     private UserEntity affectedUser;
@@ -111,5 +109,13 @@ public class TransactionEntity {
 
     public UserEntity getAffectedUser() {
         return affectedUser;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public LocalTime getTime() {
+        return time;
     }
 }
