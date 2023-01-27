@@ -39,14 +39,28 @@ public class ReportService {
             final double balanceBefore = transactions.get(0).getBalanceBefore();
 
             String percentage;
+            String debug;
             if (balanceBefore > 0) {
                 final double balanceAfter = transactions.get(transactions.size() - 1).getBalanceAfter();
                 percentage = percentFormatter.format((balanceAfter - balanceBefore) / balanceBefore);
+
+                // TODO: Delete this
+                debug = String.format("%s of %.2f is %.2f", percentage, balanceBefore, (balanceAfter - balanceBefore));
             } else {
                 percentage = "-";
+
+                // TODO: Delete this
+                debug = "last balance on previous day = 0";
             }
 
-            changes.add(new BalanceChangeDto(username, percentage, dateFormatter.format(date)));
+            changes.add(
+                    new BalanceChangeDto(
+                            username,
+                            percentage,
+                            dateFormatter.format(date),
+                            debug
+                    )
+            );
         });
 
         return new ReportGetDto(changes);
