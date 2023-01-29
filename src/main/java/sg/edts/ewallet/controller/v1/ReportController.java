@@ -26,7 +26,7 @@ public class ReportController {
 
     @GetMapping("/getreport/{date}")
     public ResponseEntity<ApiBody<ReportGetDto>> getReport(@PathVariable LocalDate date) {
-        var body = reportService.generateReport(date);
+        final ReportGetDto body = reportService.generateReport(date);
 
         return new ResponseEntity<>(ApiBody.ok(body), HttpStatus.OK);
     }

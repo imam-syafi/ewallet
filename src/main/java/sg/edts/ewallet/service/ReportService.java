@@ -4,64 +4,68 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.edts.ewallet.dto.response.BalanceChangeDto;
 import sg.edts.ewallet.dto.response.ReportGetDto;
-import sg.edts.ewallet.entity.TransactionEntity;
-import sg.edts.ewallet.repository.TransactionRepository;
+import sg.edts.ewallet.entity.UserEntity;
+import sg.edts.ewallet.repository.UserRepository;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
 
-    final TransactionRepository transactionRepository;
+    final UserRepository userRepository;
 
     @Autowired
-    public ReportService(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
+    public ReportService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public ReportGetDto generateReport(LocalDate date) {
-        Map<String, List<TransactionEntity>> transactionsGroupByUsername = transactionRepository.findByDate(date)
-                .stream()
-                .collect(Collectors.groupingBy(transaction -> transaction.getAffectedUser().getUsername()));
-
         final List<BalanceChangeDto> changes = new ArrayList<>();
-        final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        final String balanceChangeDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
         final NumberFormat percentFormatter = NumberFormat.getPercentInstance();
         percentFormatter.setMaximumFractionDigits(2);
 
-        transactionsGroupByUsername.forEach((username, transactions) -> {
-            final double balanceBefore = transactions.get(0).getBalanceBefore();
+        for (final UserEntity entity : userRepository.findAll()) {
+            var transactions = entity.getTransactions().stream()
+                    .filter(t -> t.getDate().equals(date))
+                    .toList();
 
-            String percentage;
-            String debug;
-            if (balanceBefore > 0) {
-                final double balanceAfter = transactions.get(transactions.size() - 1).getBalanceAfter();
-                percentage = percentFormatter.format((balanceAfter - balanceBefore) / balanceBefore);
+            String percentage = percentFormatter.format(0);
 
-                // TODO: Delete this
-                debug = String.format("%s of %.2f is %.2f", percentage, balanceBefore, (balanceAfter - balanceBefore));
-            } else {
-                percentage = "-";
+            // TODO: Delete this
+            String debug = "commit no transaction";
 
-                // TODO: Delete this
-                debug = "last balance on previous day = 0";
+            if (transactions.size() > 0) {
+                final double balanceBefore = transactions.get(0).getBalanceBefore();
+
+                if (balanceBefore > 0) {
+                    final double balanceAfter = transactions.get(transactions.size() - 1).getBalanceAfter();
+                    final double diff = (balanceAfter - balanceBefore);
+                    percentage = percentFormatter.format(diff / balanceBefore);
+
+                    // TODO: Delete this
+                    debug = String.format("then=%.2f, now=%.2f, diff=%.2f, trend=%s", balanceBefore, balanceAfter, diff, percentage);
+                } else {
+                    percentage = "-";
+
+                    // TODO: Delete this
+                    debug = "last balance on previous day = 0";
+                }
             }
 
             changes.add(
                     new BalanceChangeDto(
-                            username,
+                            entity.getUsername(),
                             percentage,
-                            dateFormatter.format(date),
+                            balanceChangeDate,
                             debug
                     )
             );
-        });
+        }
 
         return new ReportGetDto(changes);
     }
