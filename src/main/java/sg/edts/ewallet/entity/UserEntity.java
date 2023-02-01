@@ -5,11 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import sg.edts.ewallet.common.Constant;
-
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -30,9 +27,6 @@ public class UserEntity {
 
     @Column(nullable = false)
     private Integer failedRetryCount;
-
-    @OneToMany(mappedBy = "affectedUser")
-    private List<TransactionEntity> transactions;
 
     private String ktp;
 
@@ -88,9 +82,5 @@ public class UserEntity {
 
     public void resetFailedRetryCount() {
         failedRetryCount = 0;
-    }
-
-    public List<TransactionEntity> getTransactions() {
-        return transactions;
     }
 }
